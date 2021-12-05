@@ -1,0 +1,96 @@
+
+
+# 一、关于从后台拿到数据
+
+这里_this =this是为了对下面axios.get的function (resp)起作用
+,   
+因为axios.get 可以想象成一个新的匿名对象,   
+而在对象里面使用function (resp)方法  
+在调用this的时候 是指向axios.get的这个匿名对象
+ 
+ 
+```vue
+created() {
+    this.initialize()
+    const _this = this
+    axios.get('http://localhost:8181/employee/findAll').then(function (resp) {
+        _this.desserts = resp.data
+        // _this.total = resp.data.totalElements
+    })
+},
+```          
+
+
+
+# 二、一些组建解析
+
+##  1。 ElementUI 表单解释
+
+见no---》test
+```vue
+<el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+    <el-form-item label="协会名称" prop="name">
+        <el-input v-model="ruleForm.name"></el-input>
+    </el-form-item>
+    <el-form-item>
+        <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
+        <el-button @click="test_biaodan">test</el-button>
+    </el-form-item>
+</el-form>
+```
+：module绑对象，：rules绑定校验规则
+`:model="ruleForm"` 绑定表单对象
+`:rules="rules"` 绑定表单校验规则
+`ref="ruleForm"` 是用来在按钮 时候提交绑定的
+
+
+一些其他校验规则
+https://www.cnblogs.com/lst619247/p/10751013.html
+
+
+
+```vue
+export default {
+    data() {
+        return {
+            ruleForm: {
+                name: '',
+                expense: '',
+            },
+            rules: {
+                name: [
+                    {required: true, message: '请输入协会名称', trigger: 'blur'},
+                    {min: 3, max: 5, message: '名字在3～5个字', trigger: 'blur'}
+                ],
+                expense: [
+                    {request: true, massage: '请输入会费', triangle: 'blur'},
+                    {
+                        pattern: /^(([1-9]{1}\d*)|(0{1}))(\.\d{1,2})?$/,
+                        message: "请输入合法的金额数字，最多两位小数",
+                    }
+                ],
+                
+            }
+        }
+    },
+    methods: {
+        test(){
+            console.log(this.ruleForm)
+        },
+        submitForm(formName) {
+            this.$refs[formName].validate((valid) => {
+                if (valid) {
+                    alert('submit!');
+                } else {
+                    console.log('error submit!!');
+                    return false;
+                }
+            });
+        },
+        resetForm(formName) {
+            this.$refs[formName].resetFields();
+        }
+    }
+}
+
+```
